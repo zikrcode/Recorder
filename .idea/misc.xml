@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable-night/z.xml" value="0.152" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable/back.xml" value="0.169" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable/check.xml" value="0.1695" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable/circle_button.xml" value="0.1695" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable/cursor_color.xml" value="0.171" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable/delete.xml" value="0.1695" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable/more.xml" value="0.1695" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/drawable/select_all.xml" value="0.1695" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/activity_help.xml" value="0.27291666666666664" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/activity_permission.xml" value="0.27291666666666664" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/activity_recordings.xml" value="0.5" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/activity_settings.xml" value="0.33" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/activity_splash_screen.xml" value="0.27291666666666664" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/delete_recording_message.xml" value="0.33" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/item_main.xml" value="0.25885416666666666" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/notification_layout.xml" value="0.271875" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/recording_holder.xml" value="0.5" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/layout/rename_recording.xml" value="0.271875" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/menu/help_activity_menu.xml" value="0.27291666666666664" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/menu/main_activity_menu.xml" value="0.27291666666666664" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/menu/recordings_activity_delete_menu.xml" value="0.25885416666666666" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/menu/recordings_activity_menu.xml" value="0.27291666666666664" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/menu/settings_activity_menu.xml" value="0.27291666666666664" />
+        <entry key="..\:/AndroidStudioProjects/AS 2/recorder/Recorder/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1705" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Recorder</string>
+
+    //SplashScreenActivity
+    <string name="zam">zikr.and.mehr</string>
+
+    //MainActivity
+    <string name="permission">Permission required</string>
+    <string name="permission_required">Some permissions are required for \nrecording and playback</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="save_recording">Save recording</string>
+    <string name="resume">Resume</string>
+    <string name="pause">Pause</string>
+    <string name="cancel_">Cancel the recording?</string>
+    <string name="cancel_recording">Recorded data will be lost.</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+
+    //MainService
+    <string name="channel_name">Recorder</string>
+    <string name="notification_recording">Recording…</string>
+    <string name="notification_paused">Recorder paused</string>
+
+    //SettingsActivity
+    <string name="settings">Settings</string>
+    <string name="sample_rate">Sample rate (quality)</string>
+    <string name="sm_quality">Bigger rate, better quality, but larger file size.</string>
+    <string name="ok">OK</string>
+    <string name="location">Location of copied recordings</string>
+    <string name="theme">Dark theme</string>
+    <string name="name_manually">Name recordings manually</string>
+    <string name="help">Help</string>
+
+    //RecordingsActivity
+    <string name="recordings">Recordings</string>
+    <string name="selected">Selected</string>
+    <string name="delete_all">Delete all selected recordings?</string>
+    <string name="delete_all_recording">All recorded audio files will be deleted \nfrom this devise.</string>
+    <string name="delete">Delete</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="copy">Copy to device</string>
+    <string name="copied">Copied</string>
+    <string name="share">Share</string>
+    <string name="share_">Share via…</string>
+    <string name="rename_">Rename recording</string>
+    <string name="rename">Rename</string>
+    <string name="rename_error">Recording with the same name exist!</string>
+    <string name="delete_">Delete recording?</string>
+    <string name="delete_recording">Recorded audio file will be deleted \nfrom this devise.</string>
+    <string name="deleted">Deleted</string>
+
+    //RecordingsService
+    <string name="notification_playing">Playing…</string>
+    <string name="notification_audio">Audio playback stopped</string>
+
+    //HelpActivity
+</resources>

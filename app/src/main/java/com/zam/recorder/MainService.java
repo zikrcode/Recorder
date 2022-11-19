@@ -37,7 +37,7 @@ public class MainService extends Service {
 
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        startRecording();
+        //startRecording();
 
         notificationManager=getSystemService(NotificationManager.class);
 
@@ -74,6 +74,8 @@ public class MainService extends Service {
         }
 
         startForeground(1, notification);
+
+        startRecording();
         return START_STICKY;
     }
 

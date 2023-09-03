@@ -4,6 +4,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.splashscreen.SplashScreen;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -28,6 +30,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zam.recorder.utils.AppConstants;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,6 +39,8 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener{
 
+    private String [] permissions;
+    private boolean permissionAccepted = true;
     private SharedPreferences sharedPreferences;
     private Toolbar tMa;
     private ImageView ivStart, ivRecordings;
@@ -46,8 +52,19 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        SplashScreen.installSplashScreen(this);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            permissions= new String[]{Manifest.permission.RECORD_AUDIO};
+        }
+        else{
+            permissions= new String[]{Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,};
+        }
+
+        ActivityCompat.requestPermissions(this, permissions, AppConstants.PERMISSION_REQUEST_CODE);
+
 
         sharedPreferences = getApplicationContext().getSharedPreferences("SETTINGS",MODE_PRIVATE);
         setTheme(sharedPreferences.getBoolean("DARK_THEME", false));

@@ -2,7 +2,6 @@ package com.zam.recorder;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.splashscreen.SplashScreen;
@@ -11,7 +10,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -39,8 +37,6 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener{
 
-    private String [] permissions;
-    private boolean permissionAccepted = true;
     private SharedPreferences sharedPreferences;
     private Toolbar tMa;
     private ImageView ivStart, ivRecordings;
@@ -55,58 +51,66 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         SplashScreen.installSplashScreen(this);
         setContentView(R.layout.activity_main);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-            permissions= new String[]{Manifest.permission.RECORD_AUDIO};
-        }
-        else{
-            permissions= new String[]{Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,};
+        requestRecordingPermissions();
+
+        sharedPreferences = getApplicationContext()
+                .getSharedPreferences(AppConstants.SETTINGS_SHARED_PREFERENCES, MODE_PRIVATE);
+        setTheme(sharedPreferences.getBoolean(AppConstants.SHARED_PREF_KEY_DARK_THEME, false));
+
+        tMa = findViewById(R.id.tMA);
+        ivStart = findViewById(R.id.ivStart);
+        tvState = findViewById(R.id.tvState);
+        ivRecordings = findViewById(R.id.ivRecordings);
+        bDelete = findViewById(R.id.bCancel);
+        bSave = findViewById(R.id.bSave);
+        chronometer = findViewById(R.id.chronometer);
+
+        setupViews();
+    }
+
+    private void requestRecordingPermissions() {
+        String[] permissions;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            permissions = new String[] {
+                    Manifest.permission.RECORD_AUDIO
+            };
+        } else {
+            permissions = new String[] {
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            };
         }
 
         ActivityCompat.requestPermissions(this, permissions, AppConstants.PERMISSION_REQUEST_CODE);
+    }
 
-
-        sharedPreferences = getApplicationContext().getSharedPreferences("SETTINGS",MODE_PRIVATE);
-        setTheme(sharedPreferences.getBoolean("DARK_THEME", false));
-
-        tMa=findViewById(R.id.tMA);
+    private void setupViews() {
         tMa.setTitleTextColor(getColor(R.color.white));
         setSupportActionBar(tMa);
 
-        ivStart = findViewById(R.id.ivStart);
         ivStart.setOnTouchListener(this);
-
-        tvState = findViewById(R.id.tvState);
-
-        ivRecordings = findViewById(R.id.ivRecordings);
         ivRecordings.setOnTouchListener(this);
-
-        bDelete = findViewById(R.id.bCancel);
         bDelete.setOnClickListener(this);
-
-        bSave = findViewById(R.id.bSave);
         bSave.setOnClickListener(this);
 
-        chronometer = findViewById(R.id.chronometer);
-
-        intent = new Intent(MainActivity.this, MainService.class);
+        intent = new Intent(this, MainService.class);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setTheme(sharedPreferences.getBoolean("DARK_THEME", false));
+        setTheme(sharedPreferences.getBoolean(AppConstants.SHARED_PREF_KEY_DARK_THEME, false));
 
-        if (!serviceBound){
+        if (!serviceBound) {
             bindService(intent, connection, Context.BIND_AUTO_CREATE);
         }
     }
 
-    private void setTheme(boolean darkTheme){
-        if (darkTheme){
+    private void setTheme(boolean darkTheme) {
+        if (darkTheme) {
             this.getWindow().getDecorView().setBackgroundColor(getColor(R.color.dark_background));
-        }
-        else {
+        } else {
             this.getWindow().getDecorView().setBackgroundColor(getColor(R.color.white));
         }
     }
@@ -119,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intentSettings = new Intent(MainActivity.this, SettingsActivity.class);
+        Intent intentSettings = new Intent(this, SettingsActivity.class);
         startActivity(intentSettings);
         return true;
     }
@@ -165,8 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                         if (finish) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                 startForegroundService(intent);
-                            }
-                            else {
+                            } else {
                                 startService(intent);
                             }
                             mainService.setChronometer(chronometer);
@@ -181,23 +184,20 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                             ivStart.setImageDrawable(getDrawable(R.drawable.recording_resume));
                             tvState.setText(getString(R.string.pause));
                             resume=true;
-                        }
-                        else{
+                        } else {
                             if (resume) {
                                 ivStart.setImageDrawable(getDrawable(R.drawable.recording_pause));
                                 tvState.setText(getString(R.string.resume));
                                 mainService.pauseRecording();
                                 resume = false;
-                            }
-                            else {
+                            } else {
                                 ivStart.setImageDrawable(getDrawable(R.drawable.recording_resume));
                                 tvState.setText(getString(R.string.pause));
                                 mainService.resumeRecording();
                                 resume = true;
                             }
                         }
-                    }
-                    else {
+                    } else {
                         showPermissionNeeded();
                     }
                     break;
@@ -205,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 case R.id.ivRecordings:
                     unbindService(connection);
                     stopService(intent);
-                    serviceBound=false;
-                    Intent intent = new Intent(MainActivity.this, RecordingsActivity.class);
+                    serviceBound = false;
+                    Intent intent = new Intent(this, RecordingsActivity.class);
                     startActivity(intent);
                     break;
             }
@@ -216,10 +216,10 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     private boolean isPermissionGranted() {
         boolean permissions;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-            permissions= checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
-        }
-        else{
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            permissions = checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+        } else {
             permissions= checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
                     checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         }
@@ -238,16 +238,15 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     @Override
     public void onClick(View v) {
-        if (v.getId()==R.id.bCancel){
+        if (v.getId() == R.id.bCancel) {
             cancelRecording();
         }
-        if (v.getId()==R.id.bSave){
+        if (v.getId() == R.id.bSave) {
             saveRecording();
-            if (sharedPreferences.getBoolean("NAME_MANUALLY", false)) {
+            if (sharedPreferences.getBoolean(AppConstants.SHARED_PREF_KEY_NAME_MANUALLY, false)) {
                 renameRecording();
-            }
-            else {
-                Toast.makeText(this, "Recording Saved", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, getString(R.string.recording_saved), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -257,24 +256,16 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         builder.setTitle(R.string.cancel_);
         builder.setMessage(R.string.cancel_recording);
         builder.setCancelable(false);
-        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String fileName= mainService.getFileName();
-                saveRecording();
-                if (! new File(fileName).delete()){
-                    Toast.makeText(MainActivity.this, getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
-                }
-                dialogInterface.cancel();
-            };
+        builder.setPositiveButton(getString(R.string.yes), (dialogInterface, i) -> {
+            String fileName = mainService.getFileName();
+            saveRecording();
+            if (!new File(fileName).delete()) {
+                Toast.makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
+            }
+            dialogInterface.cancel();
         });
 
-        builder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.cancel();
-            }
-        });
+        builder.setNegativeButton(getString(R.string.no), (dialogInterface, i) -> dialogInterface.cancel());
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
@@ -299,66 +290,54 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private String FILE_PATH;
 
     private void renameRecording() {
-        currentRecording=new File(MainService.fileName);
-        FILE_PATH=getFilesDir().getAbsolutePath();
+        currentRecording = new File(MainService.fileName);
+        FILE_PATH = getFilesDir().getAbsolutePath();
         View view = getLayoutInflater().inflate(R.layout.rename_recording, null);
-        EditText textInputEditText = (EditText) view.findViewById(R.id.etName);
-        textInputEditText.setText(currentRecording.getName().substring(0,currentRecording.getName().length()-4));
+        EditText textInputEditText = view.findViewById(R.id.etName);
+        textInputEditText.setText(currentRecording.getName().substring(0, currentRecording.getName().length() - 4));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this,  R.style.MaterialThemeDialog);
         builder.setTitle(R.string.save_recording);
         builder.setView(view);
         builder.setCancelable(false);
         builder.setPositiveButton(getString(R.string.ok), null);
-        builder.setNegativeButton(getString(R.string.delete), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                if (! new File(MainService.fileName).delete()){
-                    Toast.makeText(MainActivity.this, getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
-                }
-                dialogInterface.cancel();
+        builder.setNegativeButton(getString(R.string.delete), (dialogInterface, i) -> {
+            if (!new File(MainService.fileName).delete()) {
+                Toast.makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
             }
+            dialogInterface.cancel();
         });
 
         AlertDialog alertDialog = builder.create();
 
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
+        alertDialog.setOnShowListener(dialogInterface -> {
 
-                Button button = ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        String newFileName=textInputEditText.getText()+".mp4";
-                        if (!newFileName.equals(currentRecording.getName())){
-                            int frequency=Collections.frequency(getRecordingList(), new File(FILE_PATH,newFileName));
-                            if (frequency>0) {
-                                textInputEditText.setError(getString(R.string.rename_error));
-                            }
-                            else {
-                                if (! currentRecording.renameTo(new File(FILE_PATH,File.separator+textInputEditText.getText()+".mp4")) ) {
-                                    Toast.makeText(MainActivity.this, getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
-                                }
-                                else {
-                                    Toast.makeText(MainActivity.this, "Recording Saved", Toast.LENGTH_SHORT).show();
-                                }
-                                alertDialog.dismiss();
-                            }
+            Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(view1 -> {
+                String newFileName = textInputEditText.getText() + AppConstants.FILE_NAME_EXTENSION;
+                if (!newFileName.equals(currentRecording.getName())) {
+                    int frequency = Collections.frequency(getRecordingList(), new File(FILE_PATH, newFileName));
+                    if (frequency > 0) {
+                        textInputEditText.setError(getString(R.string.rename_error));
+                    } else {
+                        if (!currentRecording.renameTo(new File(FILE_PATH, File.separator + textInputEditText.getText() + AppConstants.FILE_NAME_EXTENSION))) {
+                            Toast.makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, getString(R.string.recording_saved), Toast.LENGTH_SHORT).show();
                         }
-                        else {
-                            alertDialog.dismiss();
-                        }
+                        alertDialog.dismiss();
                     }
-                });
-            }
+                } else {
+                    alertDialog.dismiss();
+                }
+            });
         });
 
         alertDialog.show();
     }
 
     private ArrayList<File> getRecordingList() {
-        ArrayList<File> recordingList=new ArrayList<>();
+        ArrayList<File> recordingList = new ArrayList<>();
 
         if (FILE_PATH != null) {
             File home = new File(FILE_PATH);

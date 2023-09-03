@@ -17,6 +17,8 @@ import android.widget.Chronometer;
 
 import androidx.core.app.NotificationCompat;
 
+import com.zam.recorder.utils.AppConstants;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -37,17 +39,15 @@ public class MainService extends Service {
 
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        //startRecording();
+        notificationManager = getSystemService(NotificationManager.class);
 
-        notificationManager=getSystemService(NotificationManager.class);
-
-        Intent notificationIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage("com.zam.recorder");
+        Intent notificationIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(AppConstants.PACKAGE_NAME);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
-            Notification.Builder builder = new Notification.Builder(this, "CHANNEL_ID_1")
+            Notification.Builder builder = new Notification.Builder(this, AppConstants.CHANNEL_ID_1)
                             .setContentTitle(getText(R.string.app_name))
                             .setContentText(getText(R.string.notification_recording))
                             .setSmallIcon(R.mipmap.ic_launcher)
@@ -55,10 +55,9 @@ public class MainService extends Service {
                             .setVisibility(Notification.VISIBILITY_PUBLIC)
                             .setAutoCancel(false);
 
-            notification=builder.build();
-            this.builder=builder;
-        }
-        else {
+            notification = builder.build();
+            this.builder = builder;
+        } else {
             NotificationCompat.Builder builderCompat = new NotificationCompat.Builder(this)
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText(getString(R.string.notification_recording))
@@ -70,7 +69,7 @@ public class MainService extends Service {
 
             notification = builderCompat.build();
 
-            this.builderCompat=builderCompat;
+            this.builderCompat = builderCompat;
         }
 
         startForeground(1, notification);
@@ -82,18 +81,14 @@ public class MainService extends Service {
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
-            //String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel("CHANNEL_ID_1", name, importance);
-            //channel.setDescription(description);
-
-            //NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            NotificationChannel channel = new NotificationChannel(AppConstants.CHANNEL_ID_1, name, importance);
             notificationManager.createNotificationChannel(channel);
         }
     }
 
     public void setChronometer(Chronometer chronometer){
-        this.chronometer=chronometer;
+        this.chronometer = chronometer;
     }
     
     private boolean running = false;
@@ -101,13 +96,13 @@ public class MainService extends Service {
 
     private void startRecording() {
         prepareFilePath();
-        sharedPreferences = getApplicationContext().getSharedPreferences("SETTINGS",MODE_PRIVATE);
-        mediaRecorder=new MediaRecorder();
+        sharedPreferences = getApplicationContext().getSharedPreferences(AppConstants.SETTINGS_SHARED_PREFERENCES, MODE_PRIVATE);
+        mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setOutputFile(fileName);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        switch (sharedPreferences.getInt("SAMPLE_RATE",0)){
+        switch (sharedPreferences.getInt(AppConstants.SHARED_PREF_KEY_SAMPLE_RATE, 0)) {
             case 0:
                 mediaRecorder.setAudioSamplingRate(8000);
                 mediaRecorder.setAudioEncodingBitRate(48000);
@@ -139,9 +134,8 @@ public class MainService extends Service {
     private void prepareFilePath(){
         SimpleDateFormat zm = new SimpleDateFormat("yyyyMMddhhmmss");
         String t = zm.format(new Date());
-        fileName=File.separator+t+"zam.mp4";
-        //File file = new File(getApplicationContext().getFilesDir(), fileName);
-        fileName=getFilesDir().getAbsolutePath()+fileName;
+        fileName = File.separator + t + AppConstants.FILE_NAME_EXTENSION_ZAM;
+        fileName = getFilesDir().getAbsolutePath() + fileName;
     }
 
     @Override
@@ -152,18 +146,17 @@ public class MainService extends Service {
     public void pauseRecording() {
         mediaRecorder.pause();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder.setContentText(getText(R.string.notification_paused)+"  "+chronometer.getText());
-            notificationManager.notify(1,builder.build());
-        }
-        else {
-            builderCompat.setContentText(getText(R.string.notification_paused)+"  "+chronometer.getText());
-            notificationManager.notify(1,builderCompat.build());
+            builder.setContentText(getText(R.string.notification_paused) + "  " + chronometer.getText());
+            notificationManager.notify(1, builder.build());
+        } else {
+            builderCompat.setContentText(getText(R.string.notification_paused) + "  " + chronometer.getText());
+            notificationManager.notify(1, builderCompat.build());
         }
 
         if (running) {
             chronometer.stop();
-            pauseOffset=SystemClock.elapsedRealtime() - chronometer.getBase();
-            running=false;
+            pauseOffset = SystemClock.elapsedRealtime() - chronometer.getBase();
+            running = false;
         }
     }
 
@@ -171,17 +164,16 @@ public class MainService extends Service {
         mediaRecorder.resume();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setContentText(getText(R.string.notification_recording));
-            notificationManager.notify(1,builder.build());
-        }
-        else {
+            notificationManager.notify(1, builder.build());
+        } else {
             builderCompat.setContentText(getText(R.string.notification_recording));
-            notificationManager.notify(1,builderCompat.build());
+            notificationManager.notify(1, builderCompat.build());
         }
 
         if (!running) {
             chronometer.setBase(SystemClock.elapsedRealtime() - pauseOffset);
             chronometer.start();
-            running=true;
+            running = true;
         }
     }
 
@@ -192,7 +184,7 @@ public class MainService extends Service {
     public void stopRecording() {
         mediaRecorder.stop();
         mediaRecorder.release();
-        mediaRecorder=null;
+        mediaRecorder = null;
 
         stopForeground(true);
 

@@ -10,6 +10,7 @@
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
     <string name="save_recording">Save recording</string>
+    <string name="recording_saved">Recording Saved</string>
     <string name="resume">Resume</string>
     <string name="pause">Pause</string>
     <string name="cancel_">Cancel the recording?</string>

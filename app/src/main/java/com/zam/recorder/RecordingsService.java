@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
 
+import com.zam.recorder.utils.AppConstants;
+
 import java.io.File;
 
 public class RecordingsService extends Service {
@@ -25,28 +27,27 @@ public class RecordingsService extends Service {
     public static boolean isPlaying = false;
 
     private NotificationManager notificationManager;
-    private Notification notification=null;
+    private Notification notification = null;
     private Notification.Builder builder;
     private NotificationCompat.Builder builderCompat;
-    private final IBinder binder=new RecordingsServiceBinder();
+    private final IBinder binder = new RecordingsServiceBinder();
     private File recording;
-    private Handler handler=new Handler();
+    private Handler handler = new Handler();
     private SeekBar sbRA;
     private TextView tvRecordingDurationStart;
     private ImageView ivPlay;
 
     @Override
     public int onStartCommand (Intent intent, int flags, int startId) {
-        notificationManager=getSystemService(NotificationManager.class);
+        notificationManager = getSystemService(NotificationManager.class);
 
-        Intent notificationIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage("com.zam.recorder");
+        Intent notificationIntent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(AppConstants.PACKAGE_NAME);
 
-        //Toast.makeText(this, String.valueOf(notificationIntent), Toast.LENGTH_SHORT).show();
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
-            Notification.Builder builder = new Notification.Builder(this, "CHANNEL_ID_2")
+            Notification.Builder builder = new Notification.Builder(this, AppConstants.CHANNEL_ID_2)
                     .setContentTitle(getText(R.string.app_name))
                     .setContentText(getText(R.string.notification_playing))
                     .setSmallIcon(R.mipmap.ic_launcher)
@@ -54,10 +55,9 @@ public class RecordingsService extends Service {
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setAutoCancel(false);
 
-            notification=builder.build();
-            this.builder=builder;
-        }
-        else {
+            notification = builder.build();
+            this.builder = builder;
+        } else {
             NotificationCompat.Builder builderCompat = new NotificationCompat.Builder(this)
                     .setContentTitle(getString(R.string.app_name))
                     .setContentText(getString(R.string.notification_playing))
@@ -68,7 +68,7 @@ public class RecordingsService extends Service {
                     .setAutoCancel(false);
 
             notification = builderCompat.build();
-            this.builderCompat=builderCompat;
+            this.builderCompat = builderCompat;
         }
 
         startForeground(2, notification);
@@ -80,7 +80,7 @@ public class RecordingsService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel("CHANNEL_ID_2", name, importance);
+            NotificationChannel channel = new NotificationChannel(AppConstants.CHANNEL_ID_2, name, importance);
             notificationManager.createNotificationChannel(channel);
         }
     }
@@ -127,23 +127,20 @@ public class RecordingsService extends Service {
     }
 
     public void startPlaying() {
-        mediaPlayer=new MediaPlayer();
+        mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(recording.getPath());
             mediaPlayer.prepare();
             ivPlay.setImageDrawable(getDrawable(R.drawable.pause));
             sbRA.setMax(mediaPlayer.getDuration());
             mediaPlayer.start();
-            isPlaying=true;
+            isPlaying = true;
             updateSeekBar();
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    stopPlaying();
-                    startPlaying();
-                    pausePlaying();
-                    updateSeekBar();
-                }
+            mediaPlayer.setOnCompletionListener(mp -> {
+                stopPlaying();
+                startPlaying();
+                pausePlaying();
+                updateSeekBar();
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,7 +152,7 @@ public class RecordingsService extends Service {
         handler.removeCallbacks(runnable);
         mediaPlayer.stop();
         mediaPlayer.release();
-        mediaPlayer=null;
+        mediaPlayer = null;
     }
 
     public void pausePlaying() {
@@ -164,13 +161,12 @@ public class RecordingsService extends Service {
         mediaPlayer.pause();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setContentText(getText(R.string.notification_audio));
-            notificationManager.notify(2,builder.build());
-        }
-        else {
+            notificationManager.notify(2, builder.build());
+        } else {
             builderCompat.setContentText(getText(R.string.notification_audio));
-            notificationManager.notify(2,builderCompat.build());
+            notificationManager.notify(2, builderCompat.build());
         }
-        isPlaying=false;
+        isPlaying = false;
     }
 
     public void resumePlaying() {
@@ -178,13 +174,12 @@ public class RecordingsService extends Service {
         mediaPlayer.start();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.setContentText(getText(R.string.notification_playing));
-            notificationManager.notify(2,builder.build());
-        }
-        else {
+            notificationManager.notify(2 ,builder.build());
+        } else {
             builderCompat.setContentText(getText(R.string.notification_playing));
-            notificationManager.notify(2,builderCompat.build());
+            notificationManager.notify(2, builderCompat.build());
         }
-        isPlaying=true;
+        isPlaying = true;
         updateSeekBar();
     }
 
@@ -204,7 +199,7 @@ public class RecordingsService extends Service {
     }
 
     @Override
-    public void onDestroy (){
+    public void onDestroy () {
         stopForeground(true);
     }
 
